@@ -2,6 +2,8 @@ package br.com.victor.spring_boot_essentials.controller;
 
 import br.com.victor.spring_boot_essentials.database.model.ProdutoEntity;
 import br.com.victor.spring_boot_essentials.dto.ProdutoDto;
+import br.com.victor.spring_boot_essentials.exception.BadRequestException;
+import br.com.victor.spring_boot_essentials.exception.NotFoundException;
 import br.com.victor.spring_boot_essentials.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,13 +26,13 @@ public class ProdutoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProdutoEntity createProduct(@RequestBody ProdutoDto produtoDto){
+    public ProdutoEntity createProduct(@RequestBody ProdutoDto produtoDto) throws BadRequestException {
         return produtoService.createProduct(produtoDto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProdutoEntity updateProduct(@PathVariable Integer id, @RequestBody ProdutoDto produtoDto){
+    public ProdutoEntity updateProduct(@PathVariable Integer id, @RequestBody ProdutoDto produtoDto) throws Exception {
         return produtoService.updateProduct(produtoDto, id);
     }
 

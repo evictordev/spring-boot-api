@@ -2,7 +2,10 @@ package br.com.victor.spring_boot_essentials.service;
 
 import br.com.victor.spring_boot_essentials.database.model.ProdutoEntity;
 import br.com.victor.spring_boot_essentials.dto.ProdutoDto;
+import br.com.victor.spring_boot_essentials.exception.BadRequestException;
+import br.com.victor.spring_boot_essentials.exception.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,9 +34,15 @@ public class ProdutoService {
         return new ArrayList<>(PRODUTOS);
     }
 
-    public ProdutoEntity createProduct(ProdutoDto produtoDto) {
+    public ProdutoEntity createProduct(ProdutoDto produtoDto) throws BadRequestException {
 
         Integer indentificador = PRODUTOS.stream().mapToInt(ProdutoEntity::getId).max().orElse(0)+1;
+
+        if (produtoDto.getNome() == null ||
+                produtoDto.getPreco() == null ||
+                produtoDto.getQuantidade() == null) {
+            throw new BadRequestException("Todos os campos são obrigatórios");
+        }
 
         ProdutoEntity newProductDto = ProdutoEntity.builder()
                 .id(indentificador)
@@ -45,11 +54,11 @@ public class ProdutoService {
         return newProductDto;
     }
 
-    public ProdutoEntity updateProduct(ProdutoDto produtoDto, Integer id){
+    public ProdutoEntity updateProduct(ProdutoDto produtoDto, Integer id) throws NotFoundException {
         ProdutoEntity produto = PRODUTOS.stream().filter(p -> p.getId()
                                                     .equals(id))
                                                     .findAny()
-                                                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                                                    .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
 
         produto.setNome(produtoDto.getNome());
         produto.setPreco(produtoDto.getPreco());
